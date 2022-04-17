@@ -30,7 +30,7 @@ shadowJar {
         archiveBaseName.set('hw01-gradle')
         archiveVersion.set('0.1')
         archiveClassifier.set('')
-        attributes 'Main-Class': 'gradle.App'
+        attributes 'Main-Class': 'otus.App'
     }
 }
 tasks.named('test') {
