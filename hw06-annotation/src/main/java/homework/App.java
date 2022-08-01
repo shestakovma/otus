@@ -3,11 +3,8 @@
  */
 package homework;
 
-import java.io.Console;
-import java.util.HashMap;
-import java.util.Map;
-
 public class App {
     public static void main(String[] args) {
+        TestRunner.run("homework.tests.TestClass", 1, 1);
     }
 }
