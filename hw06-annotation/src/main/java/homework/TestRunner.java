@@ -21,10 +21,11 @@ public class TestRunner {
 
         try {
             Class<?> testClass = getClass(className);
-            Object testObject = getObject(className);
+            List<Method> methodsTest = getMethods(testClass, ANNOTATION_TEST);
 
-            List<Method> methodsTest = getMethods(testObject, ANNOTATION_TEST);
             for (Method method: methodsTest) {
+                //запускаем тест каждый раз для нового объекта
+                Object testObject = getObject(className);
                 runTest(testObject, method, args);
             }
 
@@ -76,6 +77,14 @@ public class TestRunner {
 
     private static List<Method> getMethods(Object testObject, String annotation) throws Exception {
         List<Method> methodsAll = Arrays.stream(testObject.getClass().getMethods()).toList();
+        return methodsAll.stream().filter(method ->
+                Arrays.stream(method.getDeclaredAnnotations()).filter(
+                        annotation1 -> annotation1.annotationType().getName() == annotation).count() > 0
+        ).toList();
+    }
+
+    private static List<Method> getMethods(Class<?> testClass, String annotation) throws Exception {
+        List<Method> methodsAll = Arrays.stream(testClass.getMethods()).toList();
         return methodsAll.stream().filter(method ->
                 Arrays.stream(method.getDeclaredAnnotations()).filter(
                         annotation1 -> annotation1.annotationType().getName() == annotation).count() > 0
