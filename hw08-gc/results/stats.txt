@@ -1,0 +1,53 @@
+*** До оптимизации ***
+- Размер хипа Xmx256m - падаем с OutOfMemory
+
+- Размер хипа Xmx512m, среднее время 7.5сек
+spend msec:7635, sec:7
+spend msec:7413, sec:7
+spend msec:7645, sec:7
+spend msec:7409, sec:7
+spend msec:7357, sec:7
+
+- Размер хипа Xmx1024m, среднее время 7сек
+spend msec:6835, sec:6
+spend msec:6715, sec:6
+spend msec:7040, sec:7
+spend msec:7353, sec:7
+spend msec:6916, sec:6
+
+- Размер хипа Xmx1500m, среднее время 6.5сек
+spend msec:6547, sec:6
+spend msec:6526, sec:6
+spend msec:6528, sec:6
+spend msec:6591, sec:6
+spend msec:6482, sec:6
+
+- Размер хипа Xmx2048m, среднее время 6.3сек
+spend msec:6384, sec:6
+spend msec:6394, sec:6
+spend msec:5996, sec:5
+spend msec:6484, sec:6
+spend msec:6439, sec:6
+
+- Размер хипа Xmx2500m, среднее время 5.5сек
+spend msec:5453, sec:5
+spend msec:5577, sec:5
+spend msec:5373, sec:5
+spend msec:5607, sec:5
+spend msec:5532, sec:5
+
+- Размер хипа Xmx3000m, среднее время 5.5сек
+spend msec:5410, sec:5
+spend msec:5740, sec:5
+spend msec:5545, sec:5
+spend msec:5295, sec:5
+spend msec:5418, sec:5
+
+ВЫВОД: после 3ГБ увеличение размера хипа не влияет на производительность
+
+*** После оптимизации ***
+
+- Размер хипа Xmx512m, среднее время 2.8сек
+spend msec:2832, sec:2
+
+ВЫВОД: после оптимизации добились лучшей производительности при минимально возможном размере хипа 
