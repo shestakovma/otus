@@ -13,7 +13,8 @@ class HomeworkTest {
     @DisplayName("Проверяем, что TestRunner отрабатывает")
     void runTestRunner() {
         //given
-        Boolean result = TestRunner.run("homework.TestClass", 1);
+        boolean result = TestRunner.run("homework.tests.TestClass", 1);
+        System.out.println(result);
         //then
         assertThat(result).isEqualTo(true);
     }

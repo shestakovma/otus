@@ -1,66 +1,81 @@
 package homework;
 
+import homework.annotations.After;
+import homework.annotations.Before;
+import homework.annotations.Test;
+
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
 public class TestRunner {
-
     private static final String STATS_RUN_TOTAL = "runTotal";
     private static final String STATS_RUN_OK = "runOk";
     private static final String STATS_RUN_ERROR = "runError";
 
-    private static final String ANNOTATION_BEFORE = "homework.annotations.Before";
-    private static final String ANNOTATION_AFTER = "homework.annotations.After";
-    private static final String ANNOTATION_TEST = "homework.annotations.Test";
+    public static boolean run(String className, Object... args)  {
+        boolean result = true;
+        HashMap<String, Integer> counters = new HashMap<>();
+        counters.put(STATS_RUN_TOTAL, 0);
+        counters.put(STATS_RUN_OK, 0);
+        counters.put(STATS_RUN_ERROR, 0);
 
-    public static Boolean run(String className, Object... args)  {
-        Boolean result = true;
-
+        Integer counterTotal = 0;
+        Integer counterOk = 0;
+        Integer counterError = 0;
         try {
             Class<?> testClass = getClass(className);
-            List<Method> methodsTest = getMethods(testClass, ANNOTATION_TEST);
+            List<Method> methodsTest = getMethods(testClass, Test.class);
+
+            //получаем набор методов Before
+            List<Method> methodsBefore = getMethods(testClass, Before.class);
+            //получаем набор методов After
+            List<Method> methodsAfter = getMethods(testClass, After.class);
 
             for (Method method: methodsTest) {
                 //запускаем тест каждый раз для нового объекта
                 Object testObject = getObject(className);
-                runTest(testObject, method, args);
+                runTest(testObject, method, methodsBefore, methodsAfter, counters, args);
             }
 
-            printStats(testClass);
+            printStats(counters);
         }
         catch (Exception ex) {
+            System.out.println("TestRunner.run exception: " + ex.getMessage());
             result = false;
         }
         return result;
     }
 
-    private static void runTest(Object object, Method methodTest, Object... args) throws Exception {
+    private static void runTest(
+            Object object,
+            Method methodTest,
+            List<Method> methodsBefore,
+            List<Method> methodsAfter,
+            HashMap<String, Integer> counters,
+            Object... args
+    ) throws Exception {
         try {
-            //получаем набор методов Before
-            List<Method> methodsBefore = getMethods(object, ANNOTATION_BEFORE);
-            //выполняем набор
+            //выполняем набор Before
             callMethods(object, methodsBefore, args);
             //выполняем основной метод
             methodTest.invoke(object, args);
-            //получаем набор методов After
-            List<Method> methodsAfter = getMethods(object, ANNOTATION_AFTER);
-            //выполняем набор
+            //выполняем набор After
             callMethods(object, methodsAfter, args);
 
             //обновляем статистику по успехам
-            increaseStaticIntegerValue(object.getClass(), STATS_RUN_OK);
+            increaseCounter(counters, STATS_RUN_OK);
         }
         catch(Exception ex) {
             //обновляем статистику по ошибкам
-            increaseStaticIntegerValue(object.getClass(), STATS_RUN_ERROR);
+            increaseCounter(counters, STATS_RUN_ERROR);
             System.out.println("Test failed, method: " + methodTest.getName() + ", exception: " + ex.getMessage());
         }
         finally {
             //обновляем статистику по запускам
-            increaseStaticIntegerValue(object.getClass(), STATS_RUN_TOTAL);
+            increaseCounter(counters, STATS_RUN_TOTAL);
         }
     }
 
@@ -75,20 +90,9 @@ public class TestRunner {
         return Class.forName(className);
     }
 
-    private static List<Method> getMethods(Object testObject, String annotation) throws Exception {
-        List<Method> methodsAll = Arrays.stream(testObject.getClass().getMethods()).toList();
-        return methodsAll.stream().filter(method ->
-                Arrays.stream(method.getDeclaredAnnotations()).filter(
-                        annotation1 -> annotation1.annotationType().getName() == annotation).count() > 0
-        ).toList();
-    }
-
-    private static List<Method> getMethods(Class<?> testClass, String annotation) throws Exception {
+    private static List<Method> getMethods(Class<?> testClass, Class<? extends java.lang.annotation.Annotation> annotationClass) throws Exception {
         List<Method> methodsAll = Arrays.stream(testClass.getMethods()).toList();
-        return methodsAll.stream().filter(method ->
-                Arrays.stream(method.getDeclaredAnnotations()).filter(
-                        annotation1 -> annotation1.annotationType().getName() == annotation).count() > 0
-        ).toList();
+        return methodsAll.stream().filter(method -> method.isAnnotationPresent(annotationClass)).toList();
     }
 
     private static void callMethods(Object testObject, List<Method> methods, Object... args) throws Exception {
@@ -97,32 +101,22 @@ public class TestRunner {
         }
     }
 
-    private static void increaseStaticIntegerValue(Class<?> testClass, String staticFieldName) throws Exception {
-        Field staticField = Arrays.stream(testClass.getDeclaredFields()).filter(field ->
-                    java.lang.reflect.Modifier.isStatic(field.getModifiers()) &&
-                    field.getName() == staticFieldName
-        ).toList().get(0);
-        staticField.setAccessible(true);
-        int currentValue = (Integer)staticField.get(null);
-        staticField.set(null, currentValue + 1);
+    private static void increaseCounter(HashMap<String, Integer> counters, String counterKey) {
+        if (counters.containsKey(counterKey)) {
+            counters.put(counterKey, counters.get(counterKey) + 1);
+        }
     }
 
-    private static int getStaticIntegerValue(Class<?> testClass, String staticFieldName) throws Exception {
-        Field staticField = Arrays.stream(testClass.getDeclaredFields()).filter(field ->
-                java.lang.reflect.Modifier.isStatic(field.getModifiers()) &&
-                        field.getName() == staticFieldName
-        ).toList().get(0);
-        staticField.setAccessible(true);
-        return (Integer)staticField.get(null);
+    private static Integer getCounter(HashMap<String, Integer> counters, String counterKey) {
+        if (counters.containsKey(counterKey)) {
+            return counters.get(counterKey);
+        }
+        return 0;
     }
 
-    private static void printStats(Class<?> testClass) throws Exception {
-        int testsRunTotal = getStaticIntegerValue(testClass, STATS_RUN_TOTAL);
-        int testsRunOk = getStaticIntegerValue(testClass, STATS_RUN_OK);
-        int testsRunError = getStaticIntegerValue(testClass, STATS_RUN_ERROR);
-
-        System.out.println("tests run total: " + testsRunTotal);
-        System.out.println("tests run ok: " + testsRunOk);
-        System.out.println("tests run errors: " + testsRunError);
+    private static void printStats(HashMap<String, Integer> counters) {
+        System.out.println("tests run total: " + getCounter(counters, STATS_RUN_TOTAL));
+        System.out.println("tests run ok: " + getCounter(counters, STATS_RUN_OK));
+        System.out.println("tests run errors: " + getCounter(counters, STATS_RUN_ERROR));
     }
 }
