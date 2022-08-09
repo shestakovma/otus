@@ -28,14 +28,13 @@ dependencies {
     implementation 'org.ow2.asm:asm-commons'
 }
 
-shadowJar {
+task shadowApp(type: Jar, dependsOn: shadowJar) {
+    archiveBaseName.set('hw10-byteCodes')
     manifest {
-        archiveBaseName.set('hw10-byteCodes')
-        archiveVersion.set('0.1')
-        archiveClassifier.set('')
-        attributes 'Main-Class': 'otus.App'
-        attributes 'Premain-Class': 'otus.proxy.Agent'
+        attributes 'Main-Class': 'homework.App'
+        attributes 'Premain-Class': 'homework.proxy.Agent'
     }
+    from zipTree(shadowJar.archiveFile)
 }
 test {
     useJUnitPlatform()
@@ -51,4 +50,5 @@ tasks.withType(JavaCompile) {
         encoding = 'UTF-8'
     }
 }
+tasks.build.dependsOn tasks.shadowApp
 
