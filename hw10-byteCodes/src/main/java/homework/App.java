@@ -12,5 +12,8 @@ public class App {
     public static void main(String[] args) {
         var myClass = new MyClassImpl();
         myClass.secureAccess("Security Param");
+        myClass.secureAccess("First param", "Second param");
+        myClass.secureAccess(20);
+        myClass.secureAccess();
     }
 }
