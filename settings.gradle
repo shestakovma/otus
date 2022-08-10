@@ -2,5 +2,6 @@ rootProject.name = 'otus'
 include 'hw01-gradle'
 include 'hw04-generics'
 include 'hw10-byteCodes'
-
-
+include 'hw06-annotation'
+include 'hw31-executors'
+include 'hw08-gc'
