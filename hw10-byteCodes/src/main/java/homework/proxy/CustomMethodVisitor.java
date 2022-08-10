@@ -20,6 +20,12 @@ public class CustomMethodVisitor extends MethodVisitor {
     }
 
     @Override
+    public void visitParameter(String name, int access) {
+        System.out.println("param: " + name);
+        super.visitParameter(name, access);
+    }
+
+    @Override
     public AnnotationVisitor visitAnnotation(final String descriptor, final boolean visible) {
         if (descriptor.equals(Agent.annotationLogName)) {
             isLoggable = true;
@@ -44,7 +50,6 @@ public class CustomMethodVisitor extends MethodVisitor {
             int paramCount = 0;
             int stackIndex = 1;
             for(Type arg : currentMethod.getArgumentTypes()) {
-                System.out.println(arg);
                 if (arg.getDescriptor().equals("J") || arg.getDescriptor().equals("D")) {
                     //long и double обрабатываем отдельно, т.к. они занимают по 2 слота в стеке
                     int opCode = arg.getDescriptor().equals("J") ? Opcodes.LLOAD : Opcodes.DLOAD;
