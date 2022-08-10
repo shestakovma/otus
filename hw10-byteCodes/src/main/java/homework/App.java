@@ -15,5 +15,9 @@ public class App {
         myClass.secureAccess("First param", "Second param");
         myClass.secureAccess(20);
         myClass.secureAccess();
+        myClass.methodWithInt("str", 123);
+        myClass.methodWithDouble("str", 555);
+        myClass.multiSum(1, 2, 3);
+        myClass.methodWithBoolean("str", true);
     }
 }
