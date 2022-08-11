@@ -7,12 +7,14 @@ import java.lang.invoke.CallSite;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 import java.util.ArrayList;
+import java.util.Collection;
 
 import static org.objectweb.asm.Opcodes.H_INVOKESTATIC;
 
 public class CustomMethodVisitor extends MethodVisitor {
     private boolean isLoggable = false;
     private Method currentMethod;
+    private Collection params = new ArrayList<String>();
 
     public CustomMethodVisitor(MethodVisitor mv, Method currentMethod) {
         super(Opcodes.ASM5, mv);
@@ -20,9 +22,15 @@ public class CustomMethodVisitor extends MethodVisitor {
     }
 
     @Override
-    public void visitParameter(String name, int access) {
-        System.out.println("param: " + name);
-        super.visitParameter(name, access);
+    public void visitLocalVariable(
+            final String name,
+            final String descriptor,
+            final String signature,
+            final Label start,
+            final Label end,
+            final int index) {
+        params.add(name);
+        super.visitLocalVariable(name, descriptor, signature, start, end, index);
     }
 
     @Override
