@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package homework.generated;
+
+option java_multiple_files = true;
+
+message CounterRequest {
+    int64 indexFrom = 1;
+    int64 indexTo = 2;
+    int64 pause = 3;
+}
+
+message CounterResponse {
+    int64 counter = 1;
+}
+
+message Empty {}
+
+service CounterService {
+    rpc getCounter(CounterRequest) returns (stream CounterResponse);
+}
