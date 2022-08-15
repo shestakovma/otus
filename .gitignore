@@ -4,3 +4,4 @@
 .idea
 # Ignore Gradle build output directory
 build
+java_pid18280.hprof
