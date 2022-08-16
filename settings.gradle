@@ -6,4 +6,5 @@ include 'hw06-annotation'
 include 'hw31-executors'
 include 'hw08-gc'
 include 'hw33-gRPC'
+include 'hw12-solid'
 
