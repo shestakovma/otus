@@ -26,7 +26,7 @@ public class ATM implements ICashStorage {
                 throw new StoragePackCountOverflowException();
             }
             //ячейка под номинал переполнена
-            if (!currentPack.isEmpty() && currentPack.get().getCount() + pack.getCount() > MAX_PACK_CAPACITY) {
+            if ((!currentPack.isEmpty() ? currentPack.get().getCount() : 0) + pack.getCount() > MAX_PACK_CAPACITY) {
                 throw new StorageCapacityOverflowException();
             }
             storage.add(pack);
