@@ -1,0 +1,82 @@
+plugins {
+    id 'java'
+    id 'com.github.johnrengelman.shadow'
+    id "com.google.protobuf" version "0.8.16"
+    id 'idea'
+}
+
+repositories {
+    // Use Maven Central for resolving dependencies.
+    mavenCentral()
+}
+
+dependencies {
+    implementation "io.grpc:grpc-netty"
+    implementation "io.grpc:grpc-protobuf"
+    implementation "io.grpc:grpc-stub"
+    implementation "com.google.protobuf:protobuf-java"
+    implementation "com.google.errorprone:error_prone_annotations:${Versions.errorProneAnnotations}"
+    implementation "org.apache.tomcat:annotations-api:${Versions.tomcatAnnotationsApi}"
+}
+
+task shadowAppServer(type: Jar, dependsOn: shadowJar) {
+    archiveBaseName.set('hw33-gRPC-server')
+    manifest {
+        attributes 'Main-Class': 'homework.GRPCServer'
+    }
+    from zipTree(shadowJar.archiveFile)
+}
+
+task shadowAppClient(type: Jar, dependsOn: shadowJar) {
+    archiveBaseName.set('hw33-gRPC-client')
+    manifest {
+        attributes 'Main-Class': 'homework.GRPCClient'
+    }
+    from zipTree(shadowJar.archiveFile)
+}
+
+def filesBaseDir = "$projectDir/build/generated"
+def protoSrcDir = "$projectDir/build/generated/proto"
+def grpcSrcDir = "$projectDir/build/generated/grpc"
+
+
+sourceSets {
+    main {
+        proto {
+            srcDir protoSrcDir
+        }
+        java {
+            srcDir grpcSrcDir
+        }
+    }
+}
+
+idea {
+    module {
+        sourceDirs += file(protoSrcDir);
+        sourceDirs += file(grpcSrcDir);
+    }
+}
+
+protobuf {
+    protoc {
+        artifact = 'com.google.protobuf:protoc:3.12.1'
+    }
+
+    plugins {
+        grpc {
+            artifact = 'io.grpc:protoc-gen-grpc-java:1.30.2'
+
+        }
+    }
+
+    generatedFilesBaseDir = filesBaseDir
+    generateProtoTasks {
+        ofSourceSet('main')*.plugins { grpc {} }
+    }
+}
+
+test {}
+
+tasks.build.dependsOn tasks.shadowAppServer
+tasks.build.dependsOn tasks.shadowAppClient
