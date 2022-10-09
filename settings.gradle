@@ -5,6 +5,6 @@ include 'hw10-byteCodes'
 include 'hw06-annotation'
 include 'hw31-executors'
 include 'hw08-gc'
+include 'hw32-concurrentCollections'
 include 'hw33-gRPC'
 include 'hw12-solid'
-
