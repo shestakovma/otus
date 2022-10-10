@@ -5,4 +5,5 @@ public interface Versions {
     String errorProneAnnotations = "2.11.0";
     String tomcatAnnotationsApi = "6.0.53";
     String grpc = "1.48.1";
+    String glassfishJson = "2.0.1";
 }
