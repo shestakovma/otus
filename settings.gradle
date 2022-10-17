@@ -8,3 +8,6 @@ include 'hw08-gc'
 include 'hw32-concurrentCollections'
 include 'hw33-gRPC'
 include 'hw12-solid'
+include 'hw18-jdbc:demo'
+include 'hw18-jdbc:homework'
+
