@@ -12,7 +12,8 @@ public class Phone implements Cloneable {
     @Column(name = "id")
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "client_id")
     private Client client;
 
     @Column(name = "number")
@@ -50,6 +51,14 @@ public class Phone implements Cloneable {
 
     public void setNumber(String name) {
         this.number = number;
+    }
+
+    public Client getClient() {
+        return client;
+    }
+
+    public void setClient(Client client) {
+        this.client = client;
     }
 
     @Override

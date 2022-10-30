@@ -24,7 +24,12 @@ public class TestContainersConfig {
 
         @Override
         public void start() {
-            super.start();
+            try {
+                super.start();
+            }
+            catch (Exception ex) {
+                logger().debug(ex.toString());
+            }
             var url = container.getJdbcUrl() + "&stringtype=unspecified";
             System.setProperty("app.datasource.demo-db.jdbcUrl", url);
             System.setProperty("app.datasource.demo-db.username", container.getUsername());
